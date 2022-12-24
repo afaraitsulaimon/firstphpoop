@@ -26,6 +26,7 @@
         <th>price</th>
         <th>weight_kg</th>
         <th>condition_id</th>
+        <th>&nbsp;</th>
     </tr>
     <?php
 
