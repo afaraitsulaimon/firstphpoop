@@ -25,7 +25,7 @@
         <th>price</th>
         <th>weight_kg</th>
         <th>condition_id</th>
-        <th>&nbsp</th>
+        <th>View Record</th>
 
     </tr>
     <?php
@@ -70,18 +70,17 @@
     
     <?php  foreach ($bikes as $bike) { ?>
         <tr>
-            <td><?php echo $bike['brand']; ?></td>
-            <td><?php echo $bike['model'] ?></td>
-            <td><?php echo $bike['year'] ?></td>
-            <td><?php echo $bike['category'] ?></td>
-            <td><?php echo $bike['color'] ?></td>
-            <td><?php echo $bike['description'] ?></td>
-            <td><?php echo $bike['gender'] ?></td>
-            <td><?php echo $bike['price'] ?></td>
-            <td><?php echo $bike['weight_kg'] ?></td>
-            <td><?php echo $bike['condition_id'] ?></td>
-            <td><a href="detail.php?id=<?php echo $bike['id'] ?>">View</a></td>
-
+            <td><?php echo $bike->brand ?></td>
+            <td><?php echo $bike->model ?></td>
+            <td><?php echo $bike->year ?></td>
+            <td><?php echo $bike->category ?></td>
+            <td><?php echo $bike->color ?></td>
+            <td><?php echo $bike->description ?></td>
+            <td><?php echo $bike->gender ?></td>
+            <td><?php echo $bike->price ?></td>
+            <td><?php echo $bike->weight_kg ?></td>
+            <td><?php echo $bike->condition_id ?></td>
+            <td><a href="detail.php?id=<?php echo $bike->id ?>">View</a></td>
 
         </tr>
     <?php } ?>
