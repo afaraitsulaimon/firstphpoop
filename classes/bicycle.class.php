@@ -5,6 +5,7 @@
         //so we will be able to use it within the class name like this self::
         static public $database;
 
+        static protected $db_columns = ['brand','model','year','category','gender','color','price','weight_kg','condition_id','description'];
         //then we need to create a function that set our database
         //it is also going to be a static .. which will will call the function inside the
         //connection.php, so that we can pass the argument from there to use inside our function parameter
@@ -26,6 +27,30 @@
         public $price;
         public $weight_kg;
         public $condition_id;
+
+         //we created the construct methods, which executes immediately we instantiate
+         //that is the first thing that runs
+        //pass in an $args=[] as the parameter, 
+        //which holds all the parameter that we want to pass to it, instead of passing it one by one
+        //inside the __construct function, we then call each of the  properties that we set , which is
+        // $this->brand and then set each to the brand we are getting from the new.php
+        // cos we will be instantiating there, so look at the new.php, where we are creating the new bicycle
+
+        public function __construct($args=[])
+        {
+            
+            $this->brand = $args['brand'] ?? "";
+            $this->model = $args['model'] ?? "";
+            $this->year = $args['year'] ?? "";
+            $this->category = $args['category'] ?? "";
+            $this->color = $args['color'] ?? "";
+            $this->description = $args['description'] ?? "";
+            $this->gender = $args['gender'] ?? "";
+            $this->price = $args['price'] ?? "";
+            $this->weight_kg = $args['weight_kg'] ?? "";
+            $this->condition_id = $args['condition_id'] ?? "";
+        }
+
 
         static public function set_database($database){
             self::$database = $database;
@@ -156,5 +181,95 @@
             }
         }
 
+        // writing the create function,
+        //to insert the values from the form inside the database table called bicycle
+        //after inserting and we queried , which is this             $result = self::$database->query($sql);
+        //then if we get back the result to be true, let's get the id of the inserted data by using the insert_id
+        //that is provided for us automatically by php (which is an inbuilt function)
+        //then store the id into the property id
+        //then  go back to the new.php to check if the result is true, then return another message
+        
+//let's modify our code , firstly let's create a property called db_columns, which is for all the columns in our table
+//all this brand,model,year,category,gender,color,price,weight_kg,condition_id,description  , we store it in an array
+//which will be static protected $db_columns = ['brand','model','year','category','gender','color','price','weight_kg','condition_id','description'];
+
+    //we created it at the top   
+
+    //so this line of code  $sql = "INSERT INTO bicycles (brand,model,year,category,gender,color,price,weight_kg,condition_id,description) ";
+// will change to the below
+//            $sql = "INSERT INTO bicycles join(', ' , self::$db_columns) ";
+
+
+// we will also modify this line too
+//$sql .= "VALUES('$this->brand','$this->model','$this->year','$this->category','$this->gender','$this->color','$this->price','$this->weight_kg','$this->condition_id','$this->description' )";
+// by creating a function or method.. that gives is that.. which will be called attributes() , we will write it down here
+// inside here now , we are using this         $attributes = $this->attributes();
+//which means all our attributes are not yet sanitize, to do that, we will create a function to sanitize that 
+//and this will be changed from $attributes = $this->attributes(); to $attributes = $this->sanitize_attributes();
+//so let's create the sanitize_attributes() function below
+
+public function create(){
+    //firstly let's get the attributes value
+        // $attributes = $this->attributes(); change to this
+        $attributes = $this->sanitize_attributes();
+        
+
+            $sql = "INSERT INTO bicycles (";
+            $sql .= join(', ' , self::$db_columns) ;
+            // $sql .= "VALUES('$this->brand','$this->model','$this->year','$this->category','$this->gender','$this->color','$this->price','$this->weight_kg','$this->condition_id','$this->description' )";
+             $sql .= ") VALUES ('" ;
+             $sql .= join("', '", array_values($attributes));
+             $sql .= "')";
+
+           
+           
+            $result = self::$database->query($sql);
+
+
+            // checking if the result is true, which mean if it insert the data
+            //then get us the id of the last inserted data
+            //then store the id into the property id
+            
+            if ($result) {
+                $this->id = self::$database->insert_id;
+            }
+
+            return $result;
+        }
+
+        // we set an empty array, which is going to be an associative array
+        //which will have a key and a value
+        //to get the key and the value, will will loop through the $db_columns .. that has all the fields
+        //inside this $db_columns array, we also have id, which we don't want it to loop for us.. 
+        //which means we will skip it by doing
+        // if ($column == 'id') {  continue; }
+
+        public function attributes(){
+            $attributes = [];
+
+            foreach (self::$db_columns as $column) {
+
+                if ($column == 'id') { continue; }
+
+                $attributes[$column] = $this->$column;
+            }
+
+            return $attributes;
+        }
+
+
+        //this is the function that sanitizes the data
+        // we create an empty array and store inside a variable $sanitize
+        //loop through the attributes and get the key and the function
+        // each key is equal to the value and then we used the escape_string() function s that cleans our code up
+        // then we can now go to the create function to use the sanitize_attributes()
+        public function sanitize_attributes(){
+            $sanitize = [];
+
+            foreach ($this->attributes() as $key => $value) {
+                $sanitize[$key] = self::$database->escape_string($value);
+            }
+            return $sanitize;
+        }
     }
 ?>

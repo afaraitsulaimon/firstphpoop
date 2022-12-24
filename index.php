@@ -11,6 +11,7 @@
     <title>Document</title>
 </head>
 <body>
+    <a href="add-bicycle.php">Add Bicycle</a>
 
 <table class="table table-stripped table-border">
     <tr>
