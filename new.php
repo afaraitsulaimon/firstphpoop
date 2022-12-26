@@ -35,7 +35,7 @@ require_once("private/connection.php");
        $args['condition_id'] =  $_POST['condition_id'] ?? null;
 
        $bicycle = new Bicycle($args);
-       $result = $bicycle->create();
+       $result = $bicycle->save();
 
        // let's check if this result is true
        //then we redirect to the the page that displays all the detail.php to display the newly created data

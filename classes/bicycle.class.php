@@ -15,7 +15,8 @@
         //so we will go inside the connection.php to call this function and pass in an argument
         //like this Bicycle::set_database($connection); .. the $connection is the argument
 
-    
+        // this variable holds all our errors
+        public $errors = [];
         public $id;
         public $brand;
         public $model;
@@ -27,6 +28,27 @@
         public $price;
         public $weight_kg;
         public $condition_id;
+
+        public const CATEGORIES = ['Road', 'Mountain', 'Hybrid', 'Cruiser', 'City', 'BMX'];
+
+
+        public const GENDERS = ['Men', 'Women', 'Unisex'];
+
+        public const CONDITION_OPTIONS = [
+            1 => 'Beat Up',
+            2 => 'Decent',
+            3 => 'Good',
+            4 => 'Great',
+            5 => 'Used',
+            6 => 'New'
+
+        ];
+
+        // just to hold the bicycle details in one function, when we call it
+
+        public function name() {
+            return "{$this->brand} {$this->model} {$this->year}";
+          }
 
          //we created the construct methods, which executes immediately we instantiate
          //that is the first thing that runs
@@ -181,6 +203,28 @@
             }
         }
 
+             //function for validating our form
+
+             protected function validate(){
+
+                $this->errors = [];
+
+                if (empty($this->brand) || $this->brand === "") {
+                    
+                    $this->errors[] = "Brand cannot be empty";
+                }
+
+                if (empty($this->model) || $this->model === "") {
+                    
+                    $this->errors[] = "Model cannot be empty";
+                }
+                
+
+                
+                return $this->errors;
+
+             }
+
         // writing the create function,
         //to insert the values from the form inside the database table called bicycle
         //after inserting and we queried , which is this             $result = self::$database->query($sql);
@@ -208,7 +252,24 @@
 //and this will be changed from $attributes = $this->attributes(); to $attributes = $this->sanitize_attributes();
 //so let's create the sanitize_attributes() function below
 
-public function create(){
+protected function create(){
+    //calling the validate function
+
+    $this->validate();
+
+    if (!empty($this->errors)) {
+        $output = "<div>";
+        $output .= "Please fix the following errors:";
+        $output .= "<ul>";
+        foreach($this->errors as $error) {
+          $output .= "<li>" . $error . "</li>";
+        }
+        $output .= "</ul>";
+        $output .= "</div>";
+        echo $output;
+        return false;
+    }
+
     //firstly let's get the attributes value
         // $attributes = $this->attributes(); change to this
         $attributes = $this->sanitize_attributes();
@@ -271,5 +332,81 @@ public function create(){
             }
             return $sanitize;
         }
+
+
+        //for update
+        protected function update(){
+
+             //calling the validate function
+
+    $this->validate();
+    
+            //we call the sanitize attributes
+            $attributes = $this->sanitize_attributes();
+            //we set a pair of attributes
+            $attributes_pairs = [];
+            foreach ($attributes as $key => $value) {
+                $attributes_pairs[] = "{$key} = '{$value}' ";
+
+            }
+
+            $sql = "UPDATE bicycles SET ";
+            $sql .= join(', ' , $attributes_pairs);
+            $sql .= "WHERE id ='" . self::$database->escape_string($this->id) . " '";
+            $sql .= "LIMIT 1";
+        
+            $result = self::$database->query($sql);
+         
+           
+            return $result;
+        }
+
+        //for merge attribute
+        public function merge_attributes($args=[]){
+            foreach ($args as $key => $value) {
+            if (property_exists($this, $key) && !is_null($value)) {
+                #
+                $this->$key = $value;
+            }
+            }
+
+        }
+
+        // lets add a function called save() , this will always be called after
+        // we finish querying when we are updating or create , so for everywhere we have called
+        //create() or update() , we will change it to save() and the function of the create() and update(), will be changed to protected
+
+        public function save() {
+                if (isset($this->id)) {
+                    
+                    return $this->update();
+                }else{
+                    return $this->create();
+                }
+        }
+
+
+        // the delete function
+
+        public function delete(){
+
+            $sql = "DELETE FROM bicycles ";
+            $sql .= "WHERE id='" . self::$database->escape_string($this->id) . "' ";
+
+            $sql .= "LIMIT 1";
+          
+            $result = self::$database->query($sql);
+
+          
+            return $result;
+
+            //After deleting , the instance of the object will still
+            //exist, even though the database record does not
+            // this can be useful as in
+            // echo $user->first_name ." was deleted";
+            // but we have to be careful
+            //we can't call $user->update() after we call $user->delete();
+        }
+       
     }
 ?>

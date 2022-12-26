@@ -26,7 +26,11 @@
         <th>price</th>
         <th>weight_kg</th>
         <th>condition_id</th>
-        <th>View Record</th>
+        <th>&nbsp;</th>
+        <th> &nbsp;</th>
+        <th>&nbsp;</th>
+
+
 
     </tr>
     <?php
@@ -82,6 +86,9 @@
             <td><?php echo $bike->weight_kg ?></td>
             <td><?php echo $bike->condition_id ?></td>
             <td><a href="detail.php?id=<?php echo $bike->id ?>">View</a></td>
+            <td><a href="edit-data.php?id=<?php echo $bike->id ?>">Edit</a></td>
+            <td><a href="delete-confirm-page.php?id=<?php echo $bike->id ?>">Delete</a></td>
+
 
         </tr>
     <?php } ?>
