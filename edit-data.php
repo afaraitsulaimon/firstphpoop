@@ -1,8 +1,21 @@
 <?php
-    require_once("new.php");
-        require_once("private/connection.php");
-        require_once("private/status_error_functions.php");
+    require_once("edit-auth.php");
+?>
 
+<?php
+// WE FIRST CHECK IF IT DOES NOW HAVE THE ID, SO THAT WHEN IT DOES NOT HAVE THE ID,!isset($_GET['id'])
+//WE REDIRECT TO BACK TO THE INDEX.PHP PAGE
+//but if it does, then get the id and store it in a variable and then check if the button to update  is clicked
+if (!isset($_GET['id'])) {
+    header("Location:index.php");
+}
+
+// this is the id we got from the url when we click to redirect here
+$idOfContent = $_GET['id'];
+        $bicycle = Bicycle::find_by_id($idOfContent);
+        // if ($bicycle == false) {
+        //     header("Location:index.php");
+        // } 
 
 ?>
 <!DOCTYPE html>
@@ -15,23 +28,15 @@
 </head>
 <body>
     <div>
-        <?php
-
-
-           
-            $bicycle = new Bicycle();
-          
-        ?>
-    <h2>Create Bicycle</h2>
-  
+    <h2>Edit Bicycle</h2>
     <form method="POST">
         <div>
             <label>Brand</label>
-            <input type="text" name="brand">
+            <input type="text" name="brand" value="<?php echo $bicycle->brand ?>">
         </div>
         <div>
             <label>Model</label>
-            <input type="text" name="model">
+            <input type="text" name="model" value="<?php echo $bicycle->model ?>">
         </div>
 
         <div>
@@ -49,16 +54,19 @@
             <option value="2002">2002</option>
             </select>
         </div>
+       
         <div>
             <label>Category</label>
             <select name="category">
-            <option></option>
+            <option value=""></option>
+        
             <option value="road">Road</option>
             <option value="mountain">Mountain </option>
             <option value="hybrid"> Hybrid</option>
             <option value="cruiser">Cruiser</option>
             <option value="city">City </option>
             <option value="BMX">BMX</option>
+
             </select>
         </div>
 
@@ -75,7 +83,7 @@
 
         <div>
             <label>Color</label>
-            <input type="text" name="color">
+            <input type="text" name="color" value="<?php echo $bicycle->color ?>">
         </div>
 
   
@@ -95,25 +103,25 @@
         
         <div>
             <label>Weight(kg)</label>
-            <input type="text" name="weight_kg">
+            <input type="text" name="weight_kg" value="<?php echo $bicycle->weight_kg ?>">
         </div>
     
     <div>
             <label>Price</label>
-            $<input type="text" name="price">
+            $<input type="text" name="price" value="<?php echo $bicycle->price ?>">
         </div>
 
         
         <div>
             <label>Description</label>
-            <textarea name="describe">
-
+            <textarea name="describe" >
+            <?php echo $bicycle->description ?>
             </textarea>
         </div>
 
         
         <div>
-            <input type="submit" value="Create Bicycle" name="submitNewBicycle">
+            <input type="submit" value="Edit Bicycle" name="submitEditedBicycle">
         </div>
         </form>
 
